@@ -96,3 +96,13 @@ button:active { outline: none; border: none; }
 
 .mapboxgl-canvas { outline: none; }
 .mapboxgl-control-container { display: none; }
+
+@keyframes locator {
+	0% { transform: rotate(0deg); }
+	50% { transform: rotate(180deg); }
+	100% { transform: rotate(360deg); }
+}
+
+#locator-icon-content {
+	animation: locator 2s linear infinite forwards;
+}

@@ -15,9 +15,7 @@
 		<link rel="icon" href="images/beacon.png" />
 	</head>
 	<body>
-		<div id="readout-top">
-
-		</div>
+		<div id="readout-top"></div>
 		<div id="control">
 			<button></button>
 			<div id="compass-container">
@@ -32,6 +30,9 @@
 		<script type="module" src="build/dbeacon.js" async defer></script>
 		<div style="display: none;">
 			<image id="beacon-icon" src="images/beacon.svg" height="32px" width="32px"/>
+			<div id="locator-icon">
+				<image id="locator-icon-content" src="images/locator.svg" height="128px" width="128px" />
+			</div>			
 		</div>
 	</body>
 </html>

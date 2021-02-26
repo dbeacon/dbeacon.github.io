@@ -20,7 +20,7 @@ class DBeacon {
         window['dbeacon'] = DBeacon;
         DBeacon.init_worker();
         DBeacon.readout_top = document.querySelector('#readout-top');
-        DBeacon.readout_visible = false;
+        DBeacon.inspector_visible = false;
         DBeacon.button = document.querySelector('button');
         DBeacon.button.onclick = () => DBeacon.auto();
         DBeacon.compass_container = document.querySelector('#compass-container');
@@ -40,8 +40,8 @@ class DBeacon {
         catch (e) { }
     }
     static auto() {
-        if (DBeacon.readout_visible) {
-            DBeacon.clear_readout();
+        if (DBeacon.inspector_visible) {
+            DBeacon.clear_inspector();
         }
         DBeacon.locate();
         DBeacon.map.setZoom(DBeacon.default_zoom);
@@ -66,10 +66,11 @@ class DBeacon {
             console.log(e);
         }
     }
-    static clear_readout() {
+    static clear_inspector() {
+        DBeacon.locator_marker.remove();
         DBeacon.readout_top.innerHTML = null;
         DBeacon.readout_top.classList.remove('visible');
-        DBeacon.readout_visible = false;
+        DBeacon.inspector_visible = false;
     }
     static render_feature(feature) {
         let h2 = document.createElement('h2');
@@ -79,7 +80,7 @@ class DBeacon {
         h3.innerHTML = '(' + feature.properties.type + ')';
         DBeacon.readout_top.appendChild(h3);
         DBeacon.readout_top.classList.add('visible');
-        DBeacon.readout_visible = true;
+        DBeacon.inspector_visible = true;
     }
     static on_position(position) {
         if (!DBeacon.map)
@@ -100,8 +101,8 @@ class DBeacon {
     static on_touch_start() {
         DBeacon.ready = false;
         DBeacon.nav_mode = NavMode.MANUAL;
-        if (DBeacon.readout_visible) {
-            DBeacon.clear_readout();
+        if (DBeacon.inspector_visible) {
+            DBeacon.clear_inspector();
         }
     }
     static on_touch_end() {
@@ -139,19 +140,20 @@ class DBeacon {
 }
 DBeacon.map_token = "pk.eyJ1Ijoia2VucmVpbGx5IiwiYSI6ImNrbGR5c3o4cDA4bTAyd3FsY3pwanQ1YWkifQ.MoUKfLotk49_Z2QgtR0v6A";
 DBeacon.style_url = 'mapbox://styles/kenreilly/ckle0a9ay0oso18o1zqidsr39';
-DBeacon.readout_visible = false;
+DBeacon.inspector_visible = false;
 DBeacon.heading_lock = false;
 DBeacon.ready = true;
 DBeacon.nav_mode = NavMode.NONE;
 DBeacon.default_zoom = 16;
 DBeacon.icons = {
-    beacon: document.querySelector('#beacon-icon')
+    beacon: document.querySelector('#beacon-icon'),
+    locator: document.querySelector('#locator-icon')
 };
 DBeacon.locate = () => navigator.geolocation.getCurrentPosition(DBeacon.on_position, DBeacon.on_error);
 DBeacon.on_load_style = () => DBeacon.map.on('click', (e) => DBeacon.on_click_map(e));
 DBeacon.on_click_map = (ev) => {
-    if (DBeacon.readout_visible) {
-        DBeacon.clear_readout();
+    if (DBeacon.inspector_visible) {
+        DBeacon.clear_inspector();
     }
     let features = DBeacon.map.queryRenderedFeatures(ev.point);
     if (!features.length)
@@ -159,6 +161,8 @@ DBeacon.on_click_map = (ev) => {
     ev.preventDefault();
     try {
         let coords = features[0].geometry['coordinates'];
+        DBeacon.locator_marker = new mapboxgl.Marker({ element: DBeacon.icons.locator });
+        DBeacon.locator_marker.setLngLat(coords).setPitchAlignment('map').addTo(DBeacon.map);
         DBeacon.map.flyTo({ animate: true, center: coords });
         DBeacon.render_feature(features[0]);
     }

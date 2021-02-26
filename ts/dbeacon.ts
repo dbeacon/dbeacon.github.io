@@ -16,15 +16,18 @@ class DBeacon {
 	static compass_container: HTMLElement
 	static readout_top: HTMLElement
 
-	static readout_visible = false
+	static inspector_visible = false
 	static heading_lock = false
 	static ready = true
 
 	static nav_mode: NavMode = NavMode.NONE
 	static default_zoom = 16
 
+	static locator_marker: mapboxgl.Marker
+
 	static icons: { [name: string]: HTMLElement } = {
-		beacon: document.querySelector('#beacon-icon')
+		beacon: document.querySelector('#beacon-icon'),
+		locator: document.querySelector('#locator-icon')
 	}
 	
 	static init() {
@@ -33,7 +36,7 @@ class DBeacon {
 		DBeacon.init_worker()
 		
 		DBeacon.readout_top = document.querySelector('#readout-top')
-		DBeacon.readout_visible = false
+		DBeacon.inspector_visible = false
 
 		DBeacon.button = document.querySelector('button')
 		DBeacon.button.onclick = () => DBeacon.auto()	
@@ -44,7 +47,7 @@ class DBeacon {
 		DBeacon.compass.ondblclick = DBeacon.on_dblclick_compass
 		DBeacon.compass.ondragstart = DBeacon.on_dragstart_compass
 
-		DBeacon.init_map()	
+		DBeacon.init_map()
 		window.ondeviceorientation = DBeacon.on_device_orientation
 	}
 
@@ -57,7 +60,7 @@ class DBeacon {
 
 	static auto() {
 
-		if (DBeacon.readout_visible) { DBeacon.clear_readout() }
+		if (DBeacon.inspector_visible) { DBeacon.clear_inspector() }
 		
 		DBeacon.locate()
 		DBeacon.map.setZoom(DBeacon.default_zoom)
@@ -90,7 +93,7 @@ class DBeacon {
 	
 	static on_click_map = (ev: mapboxgl.MapMouseEvent) => {
 
-		if (DBeacon.readout_visible) { DBeacon.clear_readout() }
+		if (DBeacon.inspector_visible) { DBeacon.clear_inspector() }
 
 		let features: mapboxgl.MapboxGeoJSONFeature[] = DBeacon.map.queryRenderedFeatures(ev.point)
 		if (!features.length) return
@@ -98,17 +101,20 @@ class DBeacon {
 		
 		try {
 			let coords: mapboxgl.LngLatLike = features[0].geometry['coordinates']
+			DBeacon.locator_marker = new mapboxgl.Marker({ element: DBeacon.icons.locator })
+			DBeacon.locator_marker.setLngLat(coords).setPitchAlignment('map').addTo(DBeacon.map)
 			DBeacon.map.flyTo({ animate: true, center: coords })
 			DBeacon.render_feature(features[0])
 		}
 		catch (e) { }
 	}
 
-	static clear_readout() {
+	static clear_inspector() {
 		
+		DBeacon.locator_marker.remove()
 		DBeacon.readout_top.innerHTML = null
 		DBeacon.readout_top.classList.remove('visible')
-		DBeacon.readout_visible = false
+		DBeacon.inspector_visible = false		
 	}
 
 	static render_feature(feature: mapboxgl.MapboxGeoJSONFeature) {
@@ -122,7 +128,7 @@ class DBeacon {
 		DBeacon.readout_top.appendChild(h3)
 
 		DBeacon.readout_top.classList.add('visible')
-		DBeacon.readout_visible = true
+		DBeacon.inspector_visible = true
 	}
  
 	static on_position(position: GeolocationPosition) {
@@ -131,7 +137,7 @@ class DBeacon {
 		let coords = { lat: position.coords.latitude, lon: position.coords.longitude }
 		
 		try {
-			let marker = new mapboxgl.Marker({ element: DBeacon.icons.beacon })			
+			let marker = new mapboxgl.Marker({ element: DBeacon.icons.beacon })	
 			marker.getElement().onclick = DBeacon.on_click_self.bind(null, marker)
 			marker.setLngLat(coords)
 			marker.addTo(DBeacon.map)
@@ -149,7 +155,7 @@ class DBeacon {
 
 		DBeacon.ready = false
 		DBeacon.nav_mode = NavMode.MANUAL
-		if (DBeacon.readout_visible) { DBeacon.clear_readout() }
+		if (DBeacon.inspector_visible) { DBeacon.clear_inspector() }
 	}
 
 	static on_touch_end() {
