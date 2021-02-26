@@ -1,0 +1,98 @@
+html, body {
+	background: #000000;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100vw;
+	outline: none;
+}
+
+#map, #control { 
+	width: 100vw;
+	outline: none;
+}
+
+#map {
+	z-index: 1;
+	height: 100%;
+	background-color: cadetblue; /* temp */
+}
+
+#readout-top {
+	display: flex;
+	flex-flow: column nowrap;
+	top: 0;
+	width: 100vw;
+	height: 48vh;
+	z-index: 10;
+	padding: 4% 0;
+	box-sizing: border-box;
+	position: fixed;
+	color: white;
+	background: linear-gradient(180deg, #141220b0 74%, #30102026 92%, transparent)
+}
+
+#readout-top:not(.visible) {
+	display: none;
+}
+
+#readout-top h2, h3 {
+	width: 100vw;
+	font-weight: 100;
+	text-shadow: 1px 1px 4px #200010e0;
+	margin: 2% 0;
+	letter-spacing: 1.05px;
+	text-align: center;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#readout-top h3 { 
+	color: #f0c0d0d0;
+}
+
+#control {
+	z-index: 10;
+	height: 12vh;
+	bottom: 0;	
+	background: #10203010;
+	display: flex;
+	padding: 0 4%;
+	justify-content: space-between;
+	align-items: center;
+	box-sizing: border-box;
+	position: fixed;
+}
+
+button {
+	color: transparent;
+	border: none;
+	background-color: #00000005;
+	outline: none;
+	flex: 1;
+}
+
+button:active { outline: none; border: none; }
+
+#compass-container { transform: rotate3d(1, 0, 0, var(--pitch)) }
+
+#compass {
+	width: 10vh;
+	height: 10vh;
+	border-radius: 50%;
+	border: 6px solid #80204020;
+	box-shadow: 0px 0px 2px inset #adadad, 0px 0px 2px #afafaf;
+	box-sizing: border-box;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	transform: rotate(var(--angle));
+}
+
+#compass > span {
+	height: 32%;
+	width: 4%;
+	background-color: #d060a0;
+}
+
+.mapboxgl-canvas { outline: none; }
+.mapboxgl-control-container { display: none; }

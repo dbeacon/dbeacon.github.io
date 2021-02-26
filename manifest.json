@@ -1,0 +1,7 @@
+{
+	"short_name": "dbeacon",
+	"name": "dbeacon social map",
+	"start_url": "/",
+	"background_color": "#000000",
+	"theme_color": "#602040"
+}

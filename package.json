@@ -1,0 +1,15 @@
+{
+  "name": "dbeacon-web-client",
+  "version": "1.0.0",
+  "description": "dbeacon web client",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kenneth Reilly <8_bit_hacker>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/mapbox-gl": "^2.1.0",
+    "mapbox-gl": "^2.1.1"
+  }
+}
