@@ -16,13 +16,28 @@
 	</head>
 	<body>
 		<div id="readout-top"></div>
-		<div id="control">
-			<button></button>
-			<div id="compass-container">
-				<div id="compass" data-heading="0">
-					<span></span>
-				</div>
-			</div>			
+		<div id="control-row">
+			
+			<div class="settings">
+				<img src="images/gear.svg"></img>
+			</div>
+			
+			<div class="locator">
+				<img src="images/locator-button.svg"></img>
+			</div>
+
+			<div class="compass">
+				<img src="images/compass-button.svg" data-heading="0"></img>				
+			</div>
+		
+			<div class="avatar">
+				<img src="images/avatar-unknown.svg"></img>
+			</div>
+
+			<div class="beacon">
+				<img src="images/beacon.svg"></img>
+			</div>
+				
 		</div>
 		<div id="map"></div>
 		
@@ -32,7 +47,10 @@
 			<image id="beacon-icon" src="images/beacon.svg" height="32px" width="32px"/>
 			<div id="locator-icon">
 				<image id="locator-icon-content" src="images/locator.svg" height="128px" width="128px" />
-			</div>			
+			</div>
+			<div id="compass-icon">
+				<image id="compass-icon-content" src="images/compass.svg" height="96px" width="128px" />
+			</div>
 		</div>
 	</body>
 </html>

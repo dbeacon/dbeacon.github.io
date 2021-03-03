@@ -11,10 +11,10 @@ class DBeacon {
 	static map_element: HTMLElement
 	static map: mapboxgl.Map
 
-	static button: HTMLButtonElement
-	static compass: HTMLElement
-	static compass_container: HTMLElement
-	static readout_top: HTMLElement
+	// static compass: HTMLElement
+	// static compass_container: HTMLElement
+	static readout_top: HTMLElement = document.querySelector('#readout-top')
+	static control_row: HTMLElement = document.querySelector('#control-row')
 
 	static inspector_visible = false
 	static heading_lock = false
@@ -25,27 +25,33 @@ class DBeacon {
 
 	static locator_marker: mapboxgl.Marker
 
-	static icons: { [name: string]: HTMLElement } = {
+	static icons: { [name: string]: HTMLElement } = {		
 		beacon: document.querySelector('#beacon-icon'),
-		locator: document.querySelector('#locator-icon')
+		locator: document.querySelector('#locator-icon'),
+		compass: document.querySelector('#compass-icon')
+	}
+
+	static controls: { [name: string]: HTMLElement } = {
+		settings: DBeacon.control_row.querySelector('.settings'),
+		locator: DBeacon.control_row.querySelector('.locator'),
+		compass: DBeacon.control_row.querySelector('.compass'),
+		compass_svg: DBeacon.control_row.querySelector('.compass > img'),
+		avatar: DBeacon.control_row.querySelector('.avatar'),
+		beacon: DBeacon.control_row.querySelector('.beacon')
 	}
 	
 	static init() {
 
 		window['dbeacon'] = DBeacon
 		DBeacon.init_worker()
-		
-		DBeacon.readout_top = document.querySelector('#readout-top')
-		DBeacon.inspector_visible = false
 
-		DBeacon.button = document.querySelector('button')
-		DBeacon.button.onclick = () => DBeacon.auto()	
+		// DBeacon.compass_container = document.querySelector('#compass-container')
 		
-		DBeacon.compass_container = document.querySelector('#compass-container')
-		DBeacon.compass = document.querySelector('#compass')
-		DBeacon.compass.onclick = DBeacon.on_click_compass
-		DBeacon.compass.ondblclick = DBeacon.on_dblclick_compass
-		DBeacon.compass.ondragstart = DBeacon.on_dragstart_compass
+		// DBeacon.compass = DBeacon.compass_container.querySelector('img')
+		DBeacon.controls.compass.onclick = DBeacon.on_click_compass
+		DBeacon.controls.compass.ondblclick = DBeacon.on_dblclick_compass
+		DBeacon.controls.compass.ondragstart = DBeacon.on_dragstart_compass
+		DBeacon.controls.settings.onclick = DBeacon.on_click_settings
 
 		DBeacon.init_map()
 		window.ondeviceorientation = DBeacon.on_device_orientation
@@ -83,10 +89,18 @@ class DBeacon {
 			DBeacon.map.on('rotate', DBeacon.on_rotate)
 			DBeacon.map.on('pitch', DBeacon.on_pitch)
 			DBeacon.map.on('touchstart', DBeacon.on_touch_start)
-			DBeacon.map.on('touchend', DBeacon.on_touch_end)
-			DBeacon.nav_mode = NavMode.AUTO
+			DBeacon.map.on('touchend', DBeacon.on_touch_end)			
+
+			DBeacon.auto()
 		}
 		catch (e) { console.log(e) }
+	}
+
+	static get settings_open (): boolean { return DBeacon.control_row.classList.contains('open') }
+
+	static on_click_settings = () => {
+		DBeacon.control_row.classList[DBeacon.settings_open ? 'remove' : 'add']('open')
+		DBeacon.control_row.classList[DBeacon.settings_open ? 'remove' : 'add']('closed')
 	}
 
 	static on_load_style = () => DBeacon.map.on('click', (e) => DBeacon.on_click_map(e))
@@ -114,7 +128,7 @@ class DBeacon {
 		DBeacon.locator_marker.remove()
 		DBeacon.readout_top.innerHTML = null
 		DBeacon.readout_top.classList.remove('visible')
-		DBeacon.inspector_visible = false		
+		DBeacon.inspector_visible = false
 	}
 
 	static render_feature(feature: mapboxgl.MapboxGeoJSONFeature) {
@@ -137,10 +151,22 @@ class DBeacon {
 		let coords = { lat: position.coords.latitude, lon: position.coords.longitude }
 		
 		try {
-			let marker = new mapboxgl.Marker({ element: DBeacon.icons.beacon })	
+
+			let opts: mapboxgl.MarkerOptions = { 				
+				pitchAlignment: 'map',
+				rotationAlignment: 'map'
+			}
+
+			let marker = new mapboxgl.Marker({ ...opts, element: DBeacon.icons.compass })
+			let spinner = new mapboxgl.Marker({ ...opts, element: DBeacon.icons.locator })
+			
 			marker.getElement().onclick = DBeacon.on_click_self.bind(null, marker)
 			marker.setLngLat(coords)
 			marker.addTo(DBeacon.map)
+
+			spinner.setLngLat(coords)
+			spinner.addTo(DBeacon.map)
+
 		} catch (e) { }
 				
 		DBeacon.map.setCenter(coords)
@@ -166,24 +192,25 @@ class DBeacon {
 	static on_rotate(event: any) {
 		
 		var bearing: number = 360 - event.target.getBearing()
-		DBeacon.compass.style.setProperty('--angle', bearing.toFixed(1).toString() + 'deg')
+		DBeacon.controls.compass_svg.style.setProperty('--angle', bearing.toFixed(1).toString() + 'deg')
 	}
 
 	static on_pitch(event: any) {
 
-		var pitch: number = (event.target.getPitch() * .7)
-		DBeacon.compass_container.style.setProperty('--pitch', pitch.toFixed(1).toString() + 'deg')
+		var pitch: number = (event.target.getPitch() * .9)
+		DBeacon.controls.compass.style.setProperty('--pitch', pitch.toFixed(1).toString() + 'deg')
 	}
 
 	static on_click_compass() {
 
 		// DBeacon.map.rotateTo(0)
-		DBeacon.heading_lock = !DBeacon.heading_lock
+		// DBeacon.heading_lock = !DBeacon.heading_lock
+		DBeacon.auto()
 	}
 
 	static on_dblclick_compass() {
 		
-		DBeacon.auto()
+		// DBeacon.auto()
 	}
 
 	static on_dragstart_compass(event: any) {

@@ -7,10 +7,11 @@
 		<stop offset="0%" stop-color="#60a0ffd0"></stop>
   		<stop offset="100%" stop-color="#60a0ff10"></stop>
 	</linearGradient>
-	<g fill="none" stroke-width="1">
-		<path stroke="url(#gradient-1)" d="M 9 11 A 32 32 0 0 1 55 11" />
-		<path stroke="url(#gradient-2)" d="M 55 53 A 32 32 0 0 1 9 53" />
-		<circle stroke="#ffa060d0" cx="56" cy="12" r="2"></circle>
-		<circle stroke="#ffa060d0" cx="8" cy="52" r="2"></circle>
+	<g fill="none" stroke-width="3">
+		<path stroke="url(#gradient-1)" d="M 12 12 A 30 30 0 0 1 51 11" />
+		<path stroke="url(#gradient-2)" d="M 52 52 A 30 30 0 0 1 13 53" />
+		<circle stroke="#ffa060d0" cx="52" cy="12" r="3"></circle>
+		<circle stroke="#ffa060d0" cx="12" cy="52" r="3"></circle>		
 	</g>
+	<circle stroke-width="2" fill="none" stroke="#ff60a0d0" cx="32" cy="32" r="10"></circle>
 </svg>
